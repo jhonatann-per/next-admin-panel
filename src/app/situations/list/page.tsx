@@ -28,10 +28,8 @@ const ListPage =() => {
   // Última página disponível (retornada pelo backend)
   const [lastPage, setLastPage] = useState<number>(1);
 
-  
 
-
-    const fetchData = async(page: number) =>{
+    const fetchData = async(page: number) => {
             try {
                 const response = await instance.get(`/situations?page=${page}&limit=5`);
                 setSituations(response.data.data);

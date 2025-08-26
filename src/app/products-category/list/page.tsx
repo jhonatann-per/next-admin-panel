@@ -49,6 +49,17 @@ const ProductsCategory = () => {
     fetchCategories(currentPage)
   }, [currentPage]) // 🔹 Importante: [currentPage] faz a lista atualizar ao clicar na paginação
 
+const handleDeleteCategory = async (id: number) => {
+  try {
+    await instance.delete(`/product-categories/${id}`)
+    alert("Categoria deletada com sucesso")
+    fetchCategories(currentPage)
+  }catch(error){
+    setError("Erro ao deletar categoria")
+    console.error("Erro ao deletar categoria: ", error)
+  }
+}
+
   // Renderizando loading ou erro
   if (loading) return <div><Menu /><p>Carregando...</p></div>
   if (error) return <div><Menu /><p>{error}</p></div>
@@ -83,12 +94,12 @@ const ProductsCategory = () => {
               <Link href={`/products-category/${category.id}`}>
                 <button style={{ marginRight: "5px", padding: "5px 10px", backgroundColor: "#4caf50", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>Visualizar</button>
               </Link>
-              <Link href={`/products-category/edit/${category.id}`}>
+              <Link href={`/products-category/${category.id}/edit`}>
                 <button style={{ marginRight: "5px", padding: "5px 10px", backgroundColor: "#2196f3", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>Editar</button>
               </Link>
               <button 
                 style={{ padding: "5px 10px", backgroundColor: "#f44336", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}
-                // onClick={() => handleDeleteCategory(category.id)} // Você pode criar a função handleDeleteCategory
+                onClick={() => handleDeleteCategory(category.id)} // Você pode criar a função handleDeleteCategory
               >
                 Deletar
               </button>
