@@ -32,16 +32,11 @@ export default function CreateCategory() {
             setCategoryPost({ name: "" });
         } catch (error: any) {
             console.error("Erro ao criar categoria:", error);
-            
-            // Tratamento específico para diferentes tipos de erro
             if (error.response?.data) {
                 const errorData: ApiError = error.response.data;
-                
-                // Erro de validação do Yup (múltiplos erros)
                 if (errorData.errors && Array.isArray(errorData.errors)) {
                     setErrorMessage(errorData.errors.join(', '));
                 } 
-                // Erro de duplicidade ou outro erro específico
                 else if (errorData.message) {
                     setErrorMessage(errorData.message);
                 }

@@ -1,8 +1,9 @@
-'use client'
+"use client"
 
 import { useState, useEffect, FormEvent } from "react"
 import { useParams, useRouter } from "next/navigation"
 import instance from "@/services/api"
+import { Container, Title, Loading, Form, FormGroup, Label, Input, Button } from "./styles"
 
 export default function EditCategory() {
   const [nameCategory, setNameCategory] = useState<string>("")
@@ -44,62 +45,29 @@ export default function EditCategory() {
   }
 
   return (
-    <div style={{
-      maxWidth: "500px",
-      margin: "50px auto",
-      padding: "30px",
-      borderRadius: "10px",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-      backgroundColor: "#fff",
-      fontFamily: "Arial, sans-serif"
-    }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}>Editar Categoria</h1>
+    <Container>
+      <Title>Editar Categoria</Title>
 
       {loading ? (
-        <p style={{ textAlign: "center" }}>Carregando...</p>
+        <Loading>Carregando...</Loading>
       ) : (
-        <form onSubmit={handleEditCategory}>
-          <div style={{ marginBottom: "20px" }}>
-            <label htmlFor="name" style={{ display: "block", marginBottom: "8px", fontWeight: "bold", color: "#0e0d0d" }}>
-              Nome da Categoria:
-            </label>
-            <input
+        <Form onSubmit={handleEditCategory}>
+          <FormGroup>
+            <Label htmlFor="name">Nome da Categoria:</Label>
+            <Input
               type="text"
               id="name"
               value={nameCategory}
               onChange={(e) => setNameCategory(e.target.value)}
               disabled={save}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "6px",
-                border: "1px solid #030303",
-                fontSize: "16px",
-                color: "#333"
-              }}
             />
-          </div>
+          </FormGroup>
 
-          <button
-            type="submit"
-            disabled={save}
-            style={{
-              width: "100%",
-              padding: "12px",
-              borderRadius: "6px",
-              border: "none",
-              backgroundColor: save ? "#999" : "#4caf50",
-              color: "#fff",
-              fontWeight: "bold",
-              fontSize: "16px",
-              cursor: save ? "not-allowed" : "pointer",
-              transition: "background-color 0.3s"
-            }}
-          >
+          <Button type="submit" disabled={save}>
             {save ? "Salvando..." : "Salvar"}
-          </button>
-        </form>
+          </Button>
+        </Form>
       )}
-    </div>
+    </Container>
   )
 }

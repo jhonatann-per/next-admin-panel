@@ -1,74 +1,93 @@
-'use client'
-import { useState, useEffect } from "react"
-import instance from "@/services/api"
-import { Menu } from "@/components/Menu"
+"use client";
+
+import { useState, useEffect } from "react";
+import instance from "@/services/api";
+import { Menu } from "@/components/Menu";
+import { Button } from "@/components/Button";
+import { ButtonDelete } from "@/components/ButtonDelete";
+import Link from "next/link";
+import { 
+  Container, 
+  Title, 
+  Table, 
+  Thead, 
+  TrHead, 
+  Th, 
+  Tbody, 
+  Tr, 
+  Td 
+} from "./styles";
 
 interface Situation {
-    id: number;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function ProductSituation() {
-    const [situationsProduct, setSituationsProduct] = useState<Situation[]>([])
-    const [loading, setLoading] = useState<boolean>(true)
+  const [situationsProduct, setSituationsProduct] = useState<Situation[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-    const fetchProductSituation = async () => {
-        try {
-            const response = await instance.get("/product-situations")
-            setSituationsProduct(response.data.data)
-
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setLoading(false)
-        }
+  const fetchProductSituation = async () => {
+    try {
+      const response = await instance.get("/product-situations");
+      setSituationsProduct(response.data.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    useEffect(() =>{
-        fetchProductSituation()
-    }, [])
+  useEffect(() => {
+    fetchProductSituation();
+  }, []);
 
-    return (
-  <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-    <Menu />
-    <h1>Product Situation</h1>
-    {loading && <p>Loading...</p>}
+  return (
+    <Container>
+      <Menu />
+      <Title>Product Situation</Title>
 
-    <table
-      style={{
-        width: "100%",
-        borderCollapse: "collapse",
-        marginTop: "20px",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <thead>
-        <tr>
-          <th style={{ padding: "12px", textAlign: "left" }}>ID</th>
-          <th style={{ padding: "12px", textAlign: "left" }}>Name</th>
-          <th style={{ padding: "12px", textAlign: "left" }}>Created At</th>
-          <th style={{ padding: "12px", textAlign: "left" }}>Updated At</th>
-        </tr>
-      </thead>
+      {loading && <p>Loading...</p>}
 
-      <tbody>
-        {situationsProduct.map((situation) => (
-          <tr key={situation.id}>
-            <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{situation.id}</td>
-            <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{situation.name}</td>
-            <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-              {new Date(situation.createdAt).toLocaleDateString()}
-            </td>
-            <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-              {new Date(situation.updatedAt).toLocaleDateString()}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
+      {!loading && (
+        <Table>
+          <Thead>
+            <TrHead>
+              <Th>ID</Th>
+              <Th>Name</Th>
+              <Th>Criado Em</Th>
+              <Th>Atualizado Em</Th>
+              <Th>Ações</Th>
+            </TrHead>
+          </Thead>
 
+          <Tbody>
+            {situationsProduct.map((situation) => (
+              <Tr key={situation.id}>
+                <Td>{situation.id}</Td>
+                <Td>{situation.name}</Td>
+                <Td>{new Date(situation.createdAt).toLocaleString()}</Td>
+                <Td>{new Date(situation.updatedAt).toLocaleString()}</Td>
+                <Td>
+                  <Link href={`/products-situation/visualization/${situation.id}`}>
+                  <Button variant="view">Visualizar</Button>
+                </Link>
+                <Link href={`/products-situation/edit/${situation.id}`}>
+                  <Button variant="edit" >Editar</Button>
+                </Link>
+                  <ButtonDelete
+                    endPoint="/product-situations"
+                    id={situation.id}
+                    onSuccess={fetchProductSituation}
+                  />
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
+    </Container>
+  );
 }
