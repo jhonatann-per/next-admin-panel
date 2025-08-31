@@ -33,12 +33,12 @@ const ListPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const [mounted, setMounted] = useState(false); 
 
-  const fetchData = async (page: number) => {
+  const fetchData = async (page: number) => { 
     try {
       setLoading(true);
       const response = await instance.get(`/situations?page=${page}&limit=5`);
-      console.log("Dados recebidos do back-end:", response.data.data);
       setSituations(response.data.data);
       setCurrentPage(response.data.currentPage);
       setLastPage(response.data.lastPage);
@@ -54,6 +54,11 @@ const ListPage = () => {
   useEffect(() => {
     fetchData(currentPage);
   }, [currentPage]);
+
+ 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <Container>
@@ -79,8 +84,12 @@ const ListPage = () => {
               <Tr key={situation.id}>
                 <Td>{situation.id}</Td>
                 <Td>{situation.nameSituation}</Td>
-                <Td>{new Date(situation.createdAt).toLocaleString()}</Td>
-                <Td>{new Date(situation.updatedAt).toLocaleString()}</Td>
+                <Td>
+                  {mounted ? new Date(situation.createdAt).toLocaleString() : ""}
+                </Td>
+                <Td>
+                  {mounted ? new Date(situation.updatedAt).toLocaleString() : ""}
+                </Td>
                 <Td>
                   <Link href={`/situations/visualization/${situation.id}`}>
                     <Button variant="view">Visualizar</Button>

@@ -1,70 +1,77 @@
 'use client';
 import instance from "@/services/api";
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import * as yup from "yup";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from "react-hook-form";
+import {
+  Container,
+  Form,
+  Title,
+  Label,
+  Input,
+  Button,
+  ErrorText,
+  SuccessText,
+  SmallText,
+} from "./styles";
 
 interface Situation {
-    nameSituation: string;
+  nameSituation: string;
 }
 
+const situationSchema = yup.object().shape({
+  nameSituation: yup
+    .string()
+    .required("O nome da situação é obrigatório.")
+    .min(5, "O nome da situação deve ter pelo menos 5 caracteres."),
+});
+
 export default function CreateSituation() {
-    const [situationPost, setSituationPost] = useState<Situation>({ nameSituation: "" });
-    const [loading, setLoading] = useState<boolean>(false);
-    const [successMessage, setSuccessMessage] = useState<string>("");   
-    const [errorMessage, setErrorMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>("");   
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-    // Função para extrair a primeira mensagem de erro
-    const extractErrorMessage = (error: any): string => {
-        if (error.response && error.response.data) {
-            const data = error.response.data;
-            if (Array.isArray(data.message)) return data.message[0];
-            if (typeof data.message === "string") return data.message;
-        }
-        return "Erro de conexão com o servidor.";
-    };
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<Situation>({
+    resolver: yupResolver(situationSchema),
+  });
 
-    const handleSubmitCreateSituation = async (e: FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setSuccessMessage("");
-        setErrorMessage("");
+  const onSubmit = async (data: Situation) => {
+    setLoading(true);
+    setSuccessMessage("");
+    setErrorMessage("");
 
-        try {
-            const response = await instance.post("/situations", situationPost);
-            setSuccessMessage(response.data.message || "Situação criada com sucesso!");
-            setSituationPost({ nameSituation: "" });
-        } catch (error: any) {
-            console.error("Failed to create situation:", error);
-            setErrorMessage(extractErrorMessage(error));
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+      const response = await instance.post("/situations", data);
+      setSuccessMessage(response.data.message || "Situação criada com sucesso!");
+      reset();
+    } catch (err: any) {
+      console.error("Failed to create situation:", err);
+      setErrorMessage(err.response?.data?.message || "Erro de conexão com o servidor.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <div>
-            <form onSubmit={handleSubmitCreateSituation}>
-                <div>
-                    <label htmlFor="nameSituation">Nome:</label>
-                    <input
-                        type="text"
-                        name="nameSituation"
-                        value={situationPost.nameSituation}
-                        onChange={(e) =>
-                            setSituationPost({ ...situationPost, nameSituation: e.target.value })
-                        }
-                        required
-                        minLength={5}
-                    />
-                    <small>Mínimo 5 caracteres</small>
-                </div>
+  return (
+    <Container>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <Title>Criar Situação</Title>
 
-                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <Label htmlFor="nameSituation">Nome</Label>
+        <Input type="text" {...register("nameSituation")} />
+        {errors.nameSituation && (
+          <ErrorText>{errors.nameSituation.message}</ErrorText>
+        )}
+        <SmallText>Mínimo 5 caracteres</SmallText>
 
-                <button type="submit" disabled={loading}>
-                    {loading ? "Criando..." : "Criar"}
-                </button>
-            </form>
-        </div>
-    );
+        {successMessage && <SuccessText>{successMessage}</SuccessText>}
+        {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+
+        <Button type="submit" disabled={loading}>
+          {loading ? "Criando..." : "Criar"}
+        </Button>
+      </Form>
+    </Container>
+  );
 }

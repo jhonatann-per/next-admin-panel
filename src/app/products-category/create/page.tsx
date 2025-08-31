@@ -1,80 +1,75 @@
-'use client'
-import { useState, FormEvent } from "react";
-import instance from "@/services/api"
+"use client"; 
+import { useState } from "react";
+import instance from "@/services/api";
 import { Menu } from "@/components/Menu";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import { Container, Form, Title, Label, Input, Button, ErrorText, SuccessText } from "./styles";
+
 interface PostCategory {
-    name: string;
+  name: string;
 }
 
-interface ApiError {
-    message?: string;
-    errors?: string[];
-}
+const categorySchema = yup.object({
+  name: yup
+    .string()
+    .required("O nome da categoria é obrigatório.")
+    .min(5, "O nome da categoria deve ter pelo menos 5 caracteres."),
+});
 
 export default function CreateCategory() {
-    const [categoryPost, setCategoryPost] = useState<PostCategory>({
-        name: "",
-    });
-    const [loading, setLoading] = useState<boolean>(false);
-    const [success, setSuccess] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<PostCategory>({
+    resolver: yupResolver(categorySchema),
+  });
 
-    const handleSubmitCreateCategory = async (e: FormEvent) => {
-        e.preventDefault(); 
-        setLoading(true);
-        setErrorMessage(null);
-        setSuccess(false);
-        
-        try {
-            const response = await instance.post("/product-categories", categoryPost)
-            console.log("Categoria criada com sucesso:", response.data);
-            setSuccess(true);
-            setCategoryPost({ name: "" });
-        } catch (error: any) {
-            console.error("Erro ao criar categoria:", error);
-            if (error.response?.data) {
-                const errorData: ApiError = error.response.data;
-                if (errorData.errors && Array.isArray(errorData.errors)) {
-                    setErrorMessage(errorData.errors.join(', '));
-                } 
-                else if (errorData.message) {
-                    setErrorMessage(errorData.message);
-                }
-               
-            }
-        } finally {
-            setLoading(false);
-        }
+  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const onSubmit = async (data: PostCategory) => {
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccess(false);
+
+    try {
+      await instance.post("/product-categories", data);
+      setSuccess(true);
+      reset();
+    } catch (error: any) {
+      if (error.response?.data) {
+        setErrorMessage(error.response.data.message || "Erro inesperado.");
+      }
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
+  return (
+    <Container>
+      <Menu />
+      <Title>Criar Categoria</Title>
+
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <div>
-            <Menu />
-            <h1>Criar Categoria</h1>
-            <form onSubmit={handleSubmitCreateCategory}>
-                <div>
-                    <label htmlFor="name">Nome:</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={categoryPost.name} 
-                        onChange={(e) => setCategoryPost({ ...categoryPost, name: e.target.value })}
-                        required
-                        minLength={5}
-                    />
-                    <small>Mínimo 5 caracteres</small>
-                </div>
-                <button type="submit" disabled={loading}>
-                    {loading ? "Criando..." : "Criar"}
-                </button>
-            </form>
-
-            {success && <p style={{ color: "green" }}>Categoria criada com sucesso!</p>}
-            {errorMessage && (
-                <div style={{ color: "red", marginTop: "10px" }}>
-                    <strong>Erro:</strong> {errorMessage}
-                </div>
-            )}
+          <Label htmlFor="name">Nome:</Label>
+          <Input type="text" {...register("name")} />
+          {errors.name && <ErrorText>{errors.name.message}</ErrorText>}
+          <small>Mínimo 5 caracteres</small>
         </div>
-    )
+
+        <Button type="submit" disabled={loading}>
+          {loading ? "Criando..." : "Criar"}
+        </Button>
+      </Form>
+
+      {success && <SuccessText>Categoria criada com sucesso!</SuccessText>}
+      {errorMessage && <ErrorText> {errorMessage}</ErrorText>}
+    </Container>
+  );
 }
