@@ -6,6 +6,7 @@ import { Menu } from "@/components/Menu"
 import Link from "next/link"
 import { Paginate } from "@/components/Paginate"
 import { ButtonDelete } from "@/components/ButtonDelete"
+import ProtectedRoute from "@/components/ProtectedRoute"
 import {
   Container,
   Title,
@@ -57,8 +58,9 @@ const ProductsCategory = () => {
   if (loading) return <div><Menu /><p>Carregando...</p></div>
   if (error) return <div><Menu /><p>{error}</p></div>
 
-  return ( 
-    <Container>
+  return (
+    <ProtectedRoute>
+      <Container>
       <Menu />
       <Title>Categoria de produtos</Title>
 
@@ -99,6 +101,8 @@ const ProductsCategory = () => {
         handlePageChange={setCurrentPage} 
       />
     </Container>
+    </ProtectedRoute>
+    
   )
 }
 
