@@ -5,7 +5,7 @@ export const Container = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #6b73ff, #000dff);
+  background: linear-gradient(135deg, #6bff8b3f, #00ff0052);
 `;
 
 export const LoginBox = styled.div`
@@ -71,7 +71,7 @@ export const Button = styled.button`
   font-weight: 500;
   transition: background 0.3s;
   &:hover {
-    background: #5a62e0;
+    background: #88e65cff;
   }
   &:disabled {
     background: #a0a6ff;
@@ -83,7 +83,6 @@ export const Message = styled.p<{ type?: "error" | "success" }>`
   color: ${({ type }) => (type === "error" ? "#ff4d4f" : "#52c41a")};
   margin-bottom: 1rem;
 `;
-
 export const RecoverPasswordButton = styled.button`
   margin-top: 10px;
   background: transparent;

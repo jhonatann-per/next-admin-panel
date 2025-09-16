@@ -12,11 +12,10 @@ import {
 } from "./styles";
 
 const links = [
-  { href: "/", label: "Home" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/products-category/list", label: "Category" },
   { href: "/products-situation/list", label: "Produtos" },
   { href: "/situations/list", label: "Situations" },
-  { href: "/contact", label: "Contact" },
 ];
 
 export const Menu = () => {
@@ -25,7 +24,7 @@ export const Menu = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    router.push("/login");
+    router.push("/");
   };
 
   return (
@@ -36,7 +35,6 @@ export const Menu = () => {
         <span />
       </Burger>
 
-      {/* Desktop */}
       <NavList>
         {links.map((link) => (
           <NavItem key={link.href}>
@@ -46,7 +44,6 @@ export const Menu = () => {
         <LogoutButton onClick={handleLogout}>Sair</LogoutButton>
       </NavList>
 
-      {/* Mobile */}
       <MobileMenu $open={open}>
         {links.map((link) => (
           <NavItem key={link.href}>

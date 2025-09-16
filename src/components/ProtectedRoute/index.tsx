@@ -1,15 +1,20 @@
 import { ReactNode } from "react";
-
 import { useAuth } from "@/hooks/useAuth";
 
-interface ProtectedRouterProps {
-    children: ReactNode;
+interface ProtectedRouteProps {
+  children: ReactNode;
 }
 
-export default function ProtectedRoute({children} : ProtectedRouterProps){
-    const { authenticated } = useAuth();
-    if(!authenticated){
-        return<p>Carregando...</p>
-    }
-    return<>{children}</>
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const { authenticated, loading } = useAuth();
+
+  if (loading) {
+    return <p>Carregando...</p>; 
+  }
+
+  if (!authenticated) {
+    return null; 
+  }
+
+  return <>{children}</>;
 }

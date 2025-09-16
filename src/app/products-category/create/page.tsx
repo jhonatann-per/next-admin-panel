@@ -51,7 +51,7 @@ export default function CreateCategory() {
   };
 
   return (
-    <Container>
+      <Container>
       <Menu />
       <Title>Criar Categoria</Title>
 
@@ -71,5 +71,6 @@ export default function CreateCategory() {
       {success && <SuccessText>Categoria criada com sucesso!</SuccessText>}
       {errorMessage && <ErrorText> {errorMessage}</ErrorText>}
     </Container>
+    
   );
 }

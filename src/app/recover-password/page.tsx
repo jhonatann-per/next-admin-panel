@@ -7,16 +7,14 @@ import * as yup from 'yup';
 import instance from "@/services/api";
 
 import { 
-  Container, LoginBox, Title, Form, InputGroup, Label, Input, ErrorText, Button, Message, RecoverPasswordButton
+  Container, LoginBox, Title, Form, InputGroup, Label, Input, ErrorText, Button, Message
 } from "./styles";
 
-// Validação com Yup
 const schema = yup.object().shape({
     email: yup.string().email("E-mail inválido!").required("O email é obrigatório!"),
-    password: yup.string().required("A senha é obrigatória!"),
 });
 
-export default function LoginPage() {
+export default function RecoverPassword() {
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -26,16 +24,18 @@ export default function LoginPage() {
         resolver: yupResolver(schema),
     });
 
-    const onSubmit = async (data: { email: string; password: string }) => {
+    const onSubmit = async (data: { email: string; urlRecoverPassword?: string}) => {
+        
+        data.urlRecoverPassword = "http://localhost:3000/recover-password/update-password"
+
         setLoading(true);
         setError(null);
         setSuccess(null);
 
         try {
-            const response = await instance.post("/login", data);
-            localStorage.setItem("token", response.data.user.token)
-            setSuccess("Login realizado com sucesso!");
-            router.push("/dashboard");
+            const response = await instance.post("/recover-password", data);
+
+            setSuccess(response.data.message || "E-mail enviado! Verifique sua caixa de entrada!");
 
         } catch (error: any) {
             if (error.response?.data?.message) {
@@ -44,7 +44,7 @@ export default function LoginPage() {
                     : error.response.data.message
                 );
             } else {
-                setError("Erro ao realizar o login!");
+                setError("Erro Email não Encontrado!");
             }
         } finally {
             setLoading(false);
@@ -71,25 +71,11 @@ export default function LoginPage() {
                         {errors.email && <ErrorText>{errors.email.message}</ErrorText>}
                     </InputGroup>
 
-                    <InputGroup>
-                        <Label htmlFor="password">Senha:</Label>
-                        <Input
-                            type="password"
-                            id="password"
-                            placeholder="Digite sua senha"
-                            {...register('password')}
-                        />
-                        {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
-                    </InputGroup>
-
                     <Button type="submit" disabled={loading}>
                         {loading ? "Acessando..." : "Acessar"}
                     </Button>
                 </Form>
-
-                <RecoverPasswordButton onClick={() => router.push("/recover-password")}>
-                    Esqueceu a senha? Redefinir
-                </RecoverPasswordButton>
+                
             </LoginBox>
         </Container>
     )

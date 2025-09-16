@@ -11,7 +11,6 @@ export const Container = styled.nav`
   align-items: center;
 `;
 
-/* Menu Desktop */
 export const NavList = styled.ul`
   display: flex;
   align-items: center;
@@ -56,7 +55,6 @@ export const LogoutButton = styled.button`
   }
 `;
 
-/* Botão hamburguer animado */
 export const Burger = styled.div<{ $open: boolean }>`
   display: none;
   flex-direction: column;
@@ -64,7 +62,7 @@ export const Burger = styled.div<{ $open: boolean }>`
   width: 25px;
   height: 20px;
   cursor: pointer;
-  z-index: 20; /* fica na frente do menu */
+  z-index: 20; 
 
   span {
     width: 100%;
@@ -75,7 +73,6 @@ export const Burger = styled.div<{ $open: boolean }>`
     transform-origin: center;
   }
 
-  /* Animação para virar X */
   span:nth-child(1) {
     transform: ${({ $open }) => ($open ? "rotate(45deg) translateY(8px)" : "rotate(0)")};
   }
@@ -93,7 +90,6 @@ export const Burger = styled.div<{ $open: boolean }>`
   }
 `;
 
-/* Menu Mobile */
 export const MobileMenu = styled.ul<{ $open: boolean }>`
   display: none;
 
